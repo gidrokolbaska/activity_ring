@@ -5,10 +5,11 @@ import 'package:activity_ring/src/painter.dart';
 import 'package:flutter/material.dart';
 
 /// A progress indicator widget with Apple Watch Rings style
-class Ring extends StatelessWidget {
+class Ring extends StatefulWidget {
   // ignore: public_member_api_docs
   const Ring({
     required this.percent,
+    required this.childBuilder,
     required this.color,
     this.center,
     this.radius,
@@ -18,7 +19,6 @@ class Ring extends StatelessWidget {
     this.curve,
     this.duration,
     this.tip,
-    this.child,
     Key? key,
   }) : super(key: key);
 
@@ -57,51 +57,64 @@ class Ring extends StatelessWidget {
   /// Tip of the ring
   final ui.Image? tip;
 
-  /// Child element for this widget.
-  final Widget? child;
+  final Widget Function(double percent) childBuilder;
 
+  @override
+  State<Ring> createState() => _RingState();
+}
+
+class _RingState extends State<Ring> {
   @override
   Widget build(BuildContext context) {
     final animatedRing = TweenAnimationBuilder(
-      tween: Tween<double>(begin: 0, end: percent),
-      curve: curve ?? Curves.easeOutQuad,
-      duration: duration ?? Duration(seconds: (percent ~/ 100) + 1),
-      // ignore: avoid_types_on_closure_parameters
-      builder: (_, double percent, Widget? child) {
-        return CustomPaint(
-          painter: DrawRing(
-            percent: percent,
-            color: color,
-            width: width,
-            center: center,
-            radius: radius,
-            tip: tip,
-          ),
-          child: child,
+      tween: Tween<double>(begin: 0, end: widget.percent),
+      curve: widget.curve ?? Curves.easeOutQuad,
+      duration:
+          widget.duration ?? Duration(seconds: (widget.percent ~/ 100) + 1),
+      builder: (_, percent, child) {
+        //testFunction!(percent);
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            CustomPaint(
+              painter: DrawRing(
+                percent: percent,
+                color: widget.color,
+                width: widget.width,
+                center: widget.center,
+                radius: widget.radius,
+                tip: widget.tip,
+              ),
+              child: child,
+            ),
+            widget.childBuilder(percent),
+          ],
         );
       },
-      child: child,
+      //child: widget.childBuilder(widget.percent),
     );
     final staticRing = CustomPaint(
       painter: DrawRing(
-        percent: percent,
-        color: color,
-        width: width,
-        center: center,
-        radius: radius,
-        tip: tip,
+        percent: widget.percent,
+        color: widget.color,
+        width: widget.width,
+        center: widget.center,
+        radius: widget.radius,
+        tip: widget.tip,
       ),
-      child: child,
+      child: widget.childBuilder(widget.percent),
     );
 
     return CustomPaint(
       painter: DrawFullRing(
-        width: width,
-        ringPaint: showBackground ? color.backgroundRingPaint(width) : null,
-        center: center,
-        radius: radius,
+        width: widget.width,
+        ringPaint: widget.showBackground
+            ? widget.color.backgroundRingPaint(widget.width)
+            : null,
+        center: widget.center,
+        radius: widget.radius,
       ),
-      child: animate ? animatedRing : staticRing,
+      child: widget.animate ? animatedRing : staticRing,
     );
   }
 }

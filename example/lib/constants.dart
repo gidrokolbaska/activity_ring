@@ -1,8 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
-import 'package:flutter/material.dart';
-
 import 'package:activity_ring/activity_ring.dart';
+import 'package:flutter/material.dart';
 
 /// Manually specify all colors
 final RingColorScheme ringGradients = RingColorScheme(ringGradients: [
@@ -16,19 +15,18 @@ final RingColorScheme ringColors = RingColorScheme(ringColors: [
   Colors.red,
   Colors.green,
   Colors.blue,
-], intensity: 20);
+]);
 
 /// Specify only gradinet color set for the first ring only.
 /// Other rings will be interpolated.
 final RingColorScheme ringGradient = RingColorScheme(ringGradient: [
-  Colors.red[900],
-  Colors.blue[300],
+  Colors.red[900]!,
+  Colors.blue[300]!,
 ]);
 
 /// Specify only 1 color
 final RingColorScheme ringColor = RingColorScheme(
   ringColor: Colors.red,
-  intensity: 20,
 );
 
 const firstRingPercent = 80.0;

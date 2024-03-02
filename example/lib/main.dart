@@ -12,97 +12,34 @@ Future<void> main() async {
 
 /// Example widget to show Ring widget
 class RingExample extends StatelessWidget {
+  const RingExample({super.key});
+
   // ignore: public_member_api_docs
-  const RingExample({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const Divider(height: 50),
-        const Text('One Ring. percent = $firstRingPercent'),
-        const Divider(
-          height: 100,
-          color: Colors.transparent,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Ring(
-              percent: firstRingPercent,
-              color: ringGradients,
-              radius: ringRadius,
-              width: width,
-              child: gradientsChild,
-            ),
-            Ring(
-              percent: firstRingPercent,
-              color: ringColors,
-              radius: ringRadius,
-              width: width,
-              child: colorsChild,
-            ),
-            Ring(
-              percent: firstRingPercent,
-              color: ringGradient,
-              radius: ringRadius,
-              width: width,
-              child: gradientChild,
-            ),
-            Ring(
-              percent: firstRingPercent,
-              color: ringColor,
-              radius: ringRadius,
-              width: width,
-              child: colorChild,
-            ),
+    return Center(
+      child: Ring(
+        percent: 190,
+        childBuilder: (percent) {
+          final animatedCalories = percent * 2000 / 100;
+          return Text('${animatedCalories.round()}');
+        },
+        color: RingColorScheme(
+          ringGradients: [
+            [Colors.green, Colors.red, Colors.blue]
           ],
         ),
-        const Divider(height: 80),
-        const Text('2 Rings. percent = $secondRingPercent'),
-        const Divider(height: 50),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Ring(
-              percent: secondRingPercent,
-              color: ringGradients,
-              radius: ringRadius,
-              width: width,
-              child: gradientsChild,
-            ),
-            Ring(
-              percent: secondRingPercent,
-              color: ringColors,
-              radius: ringRadius,
-              width: width,
-              child: colorsChild,
-            ),
-            Ring(
-              percent: secondRingPercent,
-              color: ringGradient,
-              radius: ringRadius,
-              width: width,
-              child: gradientChild,
-            ),
-            Ring(
-              percent: secondRingPercent,
-              color: ringColor,
-              radius: ringRadius,
-              width: width,
-              child: colorChild,
-            ),
-          ],
-        ),
-      ],
+        radius: 70,
+        width: width,
+      ),
     );
   }
 }
 
 /// Main Application.
 class ExampleApp extends StatelessWidget {
-  // ignore: public_member_api_docs
-  const ExampleApp({Key key}) : super(key: key);
+  const ExampleApp({super.key});
 
   @override
   Widget build(BuildContext context) {
