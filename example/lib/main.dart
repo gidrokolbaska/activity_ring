@@ -19,19 +19,31 @@ class RingExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Ring(
-        percent: 190,
-        childBuilder: (percent) {
-          final animatedCalories = percent * 2000 / 100;
-          return Text('${animatedCalories.round()}');
-        },
-        color: RingColorScheme(
-          ringGradients: [
-            [Colors.green, Colors.red, Colors.blue]
-          ],
+      child: SizedBox(
+        height: 216,
+        child: Ring(
+          percent: 220,
+          childBuilder: (percent) {
+            final animatedCalories = percent * 2000 / 100;
+            return Text('${animatedCalories.round()}');
+          },
+          subChildBuilder: (context) {
+            return Text('TEST');
+          },
+          color: RingColorScheme(
+            ringGradients: [
+              [Colors.green, Colors.green],
+              [
+                Colors.red,
+                Colors.red,
+              ]
+            ],
+            gradient: false,
+            intensity: 0,
+          ),
+          radius: 216 / 2,
+          width: width,
         ),
-        radius: 70,
-        width: width,
       ),
     );
   }
@@ -59,6 +71,7 @@ class ExampleApp extends StatelessWidget {
       // for home screen
       // onGenerateRoute: router,
       home: const Scaffold(
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: RingExample(),
         ),

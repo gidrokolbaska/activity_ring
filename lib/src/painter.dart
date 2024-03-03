@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:activity_ring/src/color.dart';
@@ -130,23 +131,28 @@ class DrawRing extends CustomPainter {
 
     // If number of circles is more than 1, paint only last but one circle
     if (_numCircles > 1) {
-      canvas.drawCircle(
-        center,
-        radius,
-        color.getCirclePaints(_numCircles - 1, center, width).arcPaint!,
-      );
+      canvas.drawCircle(center, radius,
+          color.getCirclePaints(_numCircles - 1, center, width).arcPaint!);
 
       // Add shadow
-      if (percent % 100 > 0.1) {
-        final oval = Path()
-          ..addOval(Rect.fromCircle(center: Offset(x, y), radius: width));
-
+      if (percent % 100 > 0.99) {
         final shadowPaint = Paint()
-          ..color = Colors.black.withOpacity(0.7)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10)
-          ..blendMode = BlendMode.overlay;
+          ..shader = RadialGradient(colors: [
+            Colors.black.withOpacity(0.7),
+            Colors.transparent,
+          ], stops: const [
+            0.00001,
+            0.5,
+          ], radius: 1)
+              .createShader(
+                  Rect.fromCircle(center: Offset(x, y), radius: width));
 
-        canvas.drawPath(oval, shadowPaint);
+        canvas
+          ..save()
+          //..translate(x, y)
+          //..rotate(sweepAngle)
+          ..drawCircle(Offset(x, y), width, shadowPaint)
+          ..restore();
       }
     }
 
@@ -168,18 +174,18 @@ class DrawRing extends CustomPainter {
       );
     } else {
       canvas.drawCircle(
-        getSmallCircleCenter(center, radius, degreeToRadians(-90)),
-        width / 2,
-        color.getCirclePaints(_numCircles, center, width).initialCirclePaint!,
-      );
+          getSmallCircleCenter(center, radius, degreeToRadians(-90)),
+          width / 2,
+          color
+              .getCirclePaints(_numCircles, center, width)
+              .initialCirclePaint!);
     }
 
     if (percent % 100 >= cutoff) {
       canvas.drawCircle(
-        getSmallCircleCenter(center, radius, -pi / 2 + sweepAngle),
-        width / 2,
-        color.getCirclePaints(_numCircles, center, width).finalCirclePaint!,
-      );
+          getSmallCircleCenter(center, radius, -pi / 2 + sweepAngle),
+          width / 2,
+          color.getCirclePaints(_numCircles, center, width).finalCirclePaint!);
     }
 
     if (_tip != null) {

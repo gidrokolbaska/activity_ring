@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import 'package:activity_ring/activity_ring.dart';
@@ -292,11 +294,13 @@ class RingColorScheme {
       final initialCirclePaint = Paint()..color = _colors[i].first;
       final finalCirclePaint = Paint()..color = _colors[i].last;
 
-      final shader = SweepGradient(
+      late final shader;
+
+      shader = SweepGradient(
         colors: _colors[i],
         tileMode: TileMode.repeated,
         startAngle: degreeToRadians(270),
-        endAngle: degreeToRadians(270 + 360.0),
+        endAngle: degreeToRadians(270 + 360),
       ).createShader(
         Rect.fromCircle(
           center: center,
@@ -309,6 +313,7 @@ class RingColorScheme {
         ..style = PaintingStyle.stroke
         ..strokeWidth = width
         ..shader = shader;
+      // ..color = initialCirclePaint.color;
 
       _paints!.add(RingPaints(
         initialCirclePaint: initialCirclePaint,

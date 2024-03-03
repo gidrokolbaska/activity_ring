@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:ui' as ui;
 
 import 'package:activity_ring/src/color.dart';
@@ -11,6 +13,7 @@ class Ring extends StatefulWidget {
     required this.percent,
     required this.childBuilder,
     required this.color,
+    this.subChildBuilder,
     this.center,
     this.radius,
     this.width = 25.0,
@@ -58,6 +61,7 @@ class Ring extends StatefulWidget {
   final ui.Image? tip;
 
   final Widget Function(double percent) childBuilder;
+  final WidgetBuilder? subChildBuilder;
 
   @override
   State<Ring> createState() => _RingState();
@@ -76,18 +80,31 @@ class _RingState extends State<Ring> {
         return Stack(
           alignment: Alignment.center,
           children: [
-            CustomPaint(
-              painter: DrawRing(
-                percent: percent,
-                color: widget.color,
+            ClipPath(
+              clipper: InvertedCircleClipper(
+                radius: widget.radius!,
                 width: widget.width,
-                center: widget.center,
-                radius: widget.radius,
-                tip: widget.tip,
               ),
-              child: child,
+              child: CustomPaint(
+                painter: DrawRing(
+                  percent: percent,
+                  color: widget.color,
+                  width: widget.width,
+                  center: widget.center,
+                  radius: widget.radius,
+                  tip: widget.tip,
+                ),
+                child: child,
+              ),
             ),
-            widget.childBuilder(percent),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                widget.childBuilder(percent),
+                if (widget.subChildBuilder != null)
+                  widget.subChildBuilder!(context),
+              ],
+            )
           ],
         );
       },
@@ -117,4 +134,28 @@ class _RingState extends State<Ring> {
       child: widget.animate ? animatedRing : staticRing,
     );
   }
+}
+
+// ignore: public_member_api_docs
+class InvertedCircleClipper extends CustomClipper<Path> {
+  const InvertedCircleClipper(
+      {required this.radius, required this.width, super.reclip});
+
+  final double radius;
+  final double width;
+
+  @override
+  Path getClip(Size size) {
+    return Path()
+      ..addOval(Rect.fromCircle(
+          center: Offset(size.width / 2, size.height / 2),
+          radius: radius + width / 2))
+      ..addOval(Rect.fromCircle(
+          center: Offset(size.width / 2, size.height / 2),
+          radius: radius - width / 2))
+      ..fillType = PathFillType.evenOdd;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
